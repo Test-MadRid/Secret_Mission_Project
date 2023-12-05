@@ -1,64 +1,69 @@
-using Photon.Pun;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
-using Unity.VisualScripting;
+using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerManager : MonoBehaviour
 {
-    PhotonView PV;
+	PhotonView PV;
 
-    GameObject controller;
+	GameObject controller;
 
-    int kills;
-    int deaths;
-    private void Awake()
-    {
-        PV = GetComponent<PhotonView>();
-    }
-    void Start()
-    {
-        if (PV.IsMine)
-        {
-            CreateController();
-        }
-    }
-    void CreateController()
-    {
-        Transform spawnpoint = SpawnManager.instance.GetSpawnpoint();
-        controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { PV.ViewID });
-    }
+	int kills;
+	int deaths;
 
-    public void Die()
-    {
-        PhotonNetwork.Destroy(controller);
-        CreateController();
+	void Awake()
+	{
+		PV = GetComponent<PhotonView>();
+	}
 
-        deaths++;
+	void Start()
+	{
+		if(PV.IsMine)
+		{
+			CreateController();
+		}
+	}
 
-        Hashtable hash = new Hashtable();
-        hash.Add("deaths", deaths);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
-    }
-    public void GetKill()
-    {
-        PV.RPC(nameof(RPC_GetKill), PV.Owner);
-    }
-    [PunRPC]
-    void RPC_GetKill()
-    {
-        kills++;
+	void CreateController()
+	{
+		Transform spawnpoint = SpawnManager.Instance.GetSpawnpoint();
+		controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { PV.ViewID });
+	}
 
-        Hashtable hash = new Hashtable();
-        hash.Add("kills", kills);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
-    }
-    public static PlayerManager Find(Player player)
-    {
-        return FindObjectsOfType<PlayerManager>().SingleOrDefault(x => x.PV.Owner == player);
-    }
+	public void Die()
+	{
+		PhotonNetwork.Destroy(controller);
+		CreateController();
+
+		deaths++;
+
+		Hashtable hash = new Hashtable();
+		hash.Add("deaths", deaths);
+		PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+	}
+
+	public void GetKill()
+	{
+		PV.RPC(nameof(RPC_GetKill), PV.Owner);
+	}
+
+	[PunRPC]
+	void RPC_GetKill()
+	{
+		kills++;
+
+		Hashtable hash = new Hashtable();
+		hash.Add("kills", kills);
+		PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+	}
+
+	public static PlayerManager Find(Player player)
+	{
+		return FindObjectsOfType<PlayerManager>().SingleOrDefault(x => x.PV.Owner == player);
+	}
 }

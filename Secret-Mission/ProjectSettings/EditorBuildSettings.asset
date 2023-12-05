@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: a2003090294945b43a2093359015fb82
+    path: Assets/PolygonStarter/Scenes/Demo.unity
+    guid: 5215016c20f88ea498985ac3e0ab4f9d
   m_configObjects: {}
